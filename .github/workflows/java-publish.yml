@@ -224,7 +224,7 @@ jobs:
   report-failure:
     name: Report Workflow Failure
     runs-on: ubuntu-latest
-    needs: [build-linux, build-macos, publish]
+    needs: [build-windows, publish]
     if: always() && (github.event_name == 'release' || github.event_name == 'workflow_dispatch')
     permissions:
       contents: read
