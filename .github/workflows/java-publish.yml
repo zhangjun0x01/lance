@@ -142,6 +142,27 @@ jobs:
           path: java/lance-jni/target/release/liblance_jni.dylib
           retention-days: 1
           if-no-files-found: error
+  build-windows:
+    name: Build on Windows x86-64
+    runs-on: windows-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+      - uses: Swatinem/rust-cache@779680da715d629ac1d338a641029a2f4372abb5 # v2
+      - name: Install protoc
+        run: choco install protoc
+      - name: Build native lib
+        working-directory: java/lance-jni
+        run: cargo build --release --locked
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: liblance_jni_windows_x86_64.zip
+          path: java/lance-jni/target/release/lance_jni.dll
+          retention-days: 1
+          if-no-files-found: error
   publish:
     name: Publish Java packages
     runs-on: ubuntu-latest
@@ -149,6 +170,7 @@ jobs:
     needs:
       - build-linux
       - build-macos
+      - build-windows
     steps:
       - name: Checkout repository
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
